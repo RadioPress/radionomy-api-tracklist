@@ -18,10 +18,10 @@ $options = [
     'apikey' => '', // Your api key
     'cover' => true, // Get song cover | true = yes, false = no
     'amount' => 20, // Number of songs
-    'type' => 'xml' // Type of return | xml or string
+    'type' => 'json' // Type of return | json, xml or string | By default this tool use json
 ];
 
-/** Don't after this line
+/** Don't edit after this line
 *** Ne pas modifier après cette ligne
 *** =================================== **/
 
@@ -53,15 +53,29 @@ if (file_exists($cacheFile) && filemtime($cacheFile) > $expire) {
     $url .= '&cover='. $coverUrl;
     $url .= '&type='.$typeUrl;
 
+    // die($url);
+
     // Get content from radionomy
-    $context = stream_context_create(array('http' => array('timeout' => 30)));
-    $content = file_get_contents($url, 0, $context);
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => $url,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT => 120,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => "GET",
+        CURLOPT_HTTPHEADER => array(
+            "cache-control: no-cache"
+        ),
+    ));
+    $content = curl_exec($curl);
 
     // Test if the file was written
     if ($content === false) {
+        $err = curl_error($curl);
         http_response_code(500);
-        die('ERR_GET_CONTENT');
+        die('ERR_GET_CONTENT : '.$err);
     }
+    curl_close($curl);
 
     if ($options['type'] == 'json') {
         $xml = simplexml_load_string($content);

@@ -1,0 +1,62 @@
+html {
+  background: #efefef;
+}
+body {
+  font-family: sans-serif;
+  font-weight: 300;
+  font-size: 16px;
+}
+#main {
+  padding: 25px 0;
+}
+p {
+  line-height: 1.2;
+}
+.content blockquote:not(:last-child),
+.content dl:not(:last-child),
+.content ol:not(:last-child),
+.content p:not(:last-child),
+.content pre:not(:last-child),
+.content table:not(:last-child),
+.content ul:not(:last-child) {
+  margin-bottom: 0.6em;
+}
+.block:not(:last-child),
+.box:not(:last-child),
+.breadcrumb:not(:last-child),
+.content:not(:last-child),
+.highlight:not(:last-child),
+.level:not(:last-child),
+.message:not(:last-child),
+.notification:not(:last-child),
+.progress:not(:last-child),
+.subtitle:not(:last-child),
+.table-container:not(:last-child),
+.table:not(:last-child),
+.tabs:not(:last-child),
+.title:not(:last-child) {
+  margin-bottom: 1rem;
+}
+.image img {
+  max-width: 100%;
+  width: auto;
+  display: inline-block;
+}
+#songs-list .one-song {
+  box-shadow: none;
+  border-radius: 3px;
+}
+#songs-list .one-song .media-content {
+  align-self: center;
+}
+#songs-list .one-song .song-artists {
+  font-weight: 500;
+  font-size: 1.2em;
+  margin-bottom: 0;
+}
+#songs-list .one-song .image {
+  text-align: center;
+}
+#songs-list .one-song .image img {
+  max-height: 100%;
+}

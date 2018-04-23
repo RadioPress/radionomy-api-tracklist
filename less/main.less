@@ -1,0 +1,51 @@
+// out: ../css/main.css
+
+
+// Variables ===================
+@font-family: sans-serif;
+@bck-color: #efefef;
+
+// General ===================
+
+html {
+    background: @bck-color;
+}
+
+body {
+    font-family: @font-family; font-weight: 300; font-size: 16px;
+}
+
+#main {
+    padding: 25px 0;
+}
+
+    // Font
+p { line-height: 1.2; }
+
+    // Margin
+.content {
+    blockquote, dl, ol, p, pre, table, ul {
+        &:not(:last-child) { margin-bottom: 0.6em; }
+    }
+}
+.block, .box, .breadcrumb, .content, .highlight, .level, .message,
+.notification, .progress, .subtitle, .table-container, .table, .tabs, .title {
+    &:not(:last-child) { margin-bottom: 1rem; }
+}
+
+    // Other
+.image img { max-width: 100%; width: auto; display: inline-block; }
+
+// Tracklist ===================
+
+#songs-list {
+    .one-song {
+        box-shadow: none; border-radius: 3px;
+
+        .media-content { align-self: center; }
+        .song-artists { font-weight: 500; font-size: 1.2em; margin-bottom: 0; }
+        .image { text-align: center;
+            img { max-height: 100%; }
+        }
+    }
+}
