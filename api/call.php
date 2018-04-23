@@ -28,27 +28,52 @@ $options = [
 $cacheFile = './cache.txt'; // Path of cache file
 $expire = time() - (5.1 * 60); // Cache expire each 5min and 6sec
 
-// Create cache file if not exist
-if (!file_exists($cacheFile)) {
-    if (!touch($cacheFile)) return http_response_code(500);
-}
-
 // Check if cache is not expired
-if (filemtime($cacheFile) > $expire) {
-    echo file_get_contents($cache); // Return cache file
+if (file_exists($cacheFile) && filemtime($cacheFile) > $expire) {
+    echo file_get_contents($cacheFile); // Return cache file
 } else {
+    // Create cache file if not exist
+    if (!file_exists($cacheFile)) {
+        if (!touch($cacheFile)) return http_response_code(500);
+    }
+
     // Validate $options
     if (empty($options['radiouid']) || empty($options['apikey']) || !is_bool($options['cover']) ||
-        !is_int($options['amount']) || !in_array($options['type'], ['xml', 'string'])) {
+        !is_int($options['amount']) || !in_array($options['type'], ['xml', 'string', 'json'])) {
         http_response_code(500);
         die('ERR_OPTIONS_NOT_VALID');
     }
 
-//  http://api.radionomy.com/tracklist.cfm?radiouid=xxx&apikey=xxx&amount=50&type=xml&cover=yes
-    $url = 'http://api.radionomy.com/tracklist.cfm?radiouid='.$options['radiouid'].'&apikey='.$apikey;
-    if (isset($options['amount'])) $url .= '&amount='.$options['amount'];
-    if (isset($options['cover'])) $url .= '&cover='.$options['cover'];
-    if (isset($options['type'])) $url .= '&type='.$options['type'];
+    // Define url of radionomy API with options
+    $coverUrl = ($options['cover']) ? 'yes' : 'no';
+    $typeUrl = ($options['type'] == 'json') ? 'xml' : $options['type'];
 
-    echo $url;
+    $url = 'http://api.radionomy.com/tracklist.cfm?radiouid='.$options['radiouid'].'&apikey='.$options['apikey'];
+    $url .= '&amount='.$options['amount'];
+    $url .= '&cover='. $coverUrl;
+    $url .= '&type='.$typeUrl;
+
+    // Get content from radionomy
+    $context = stream_context_create(array('http' => array('timeout' => 30)));
+    $content = file_get_contents($url, 0, $context);
+
+    // Test if the file was written
+    if ($content === false) {
+        http_response_code(500);
+        die('ERR_GET_CONTENT');
+    }
+
+    if ($options['type'] == 'json') {
+        $xml = simplexml_load_string($content);
+        $content = json_encode($xml);
+    }
+
+    // Write content in cache file and display the content
+    if (file_put_contents($cacheFile, $content) !== false) {
+        echo $content;
+    } else {
+        http_response_code(500);
+        die('ERR_WRITE_CACHE_FILE');
+    }
+
 }
